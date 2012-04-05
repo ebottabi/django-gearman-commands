@@ -1,0 +1,11 @@
+*.pyc
+*.pyo
+# Emacs backup files & locks
+*~
+\#*
+.\#*
+*.swp
+*.swo
+pip-log.txt*
+*.swn
+logs
