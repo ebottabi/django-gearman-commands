@@ -43,7 +43,6 @@ Jozef Ševčík, sevcik@codescale.net
 TODO
 ====
 
+* cleaning up gearman jobs after failed unit tests
 * improve logging
-* gearman_overview - support for multiple gearman servers
-* gearman_overview - output 'workers'
-* tests (foo/reverse worker + job submission, status)
+* gearman_server_info - output 'workers'

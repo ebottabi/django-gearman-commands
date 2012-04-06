@@ -20,7 +20,7 @@ class Command(django_gearman_commands.GearmanWorkerBaseCommand):
     
     def do_job(self, job_data):
         # set data to cache
-        cache.set('footest', u'I AM FOO !')
+        cache.set('footest', 'I AM FOO !' if not job_data else job_data)
         
 
     
