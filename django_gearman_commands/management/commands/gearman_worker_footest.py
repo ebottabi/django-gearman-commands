@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
 from django.core.cache import cache
 import django_gearman_commands
-import logging
 
-log = logging.getLogger(__name__)
 
 class Command(django_gearman_commands.GearmanWorkerBaseCommand):
-    """Base command for Gearman workers."""
+    """Gearman worker performing 'footest' job."""
     
     @property
     def task_name(self):
