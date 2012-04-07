@@ -316,7 +316,7 @@ If possible, please use following workflow:
  * fork django-gearman-commands
  * fix it in your fork and add test to tests/__init__.py
  * add yourself as Contributor to 'Authors and Contributors'
- * and make Pull Request with description what is change supposed to do
+ * and make Pull Request with description what change is supposed to do
 
 Running tests
 -------------
@@ -342,8 +342,3 @@ Author: Jozef Ševčík, sevcik@codescale.net
 Contributors:
 None. Be the first ! :)
 
-TODO
-====
-
-* cleaning up gearman jobs after failed unit tests
-* better control over gearman_submit_job - make 'wait_until_complete' and 'background' command line arguments
