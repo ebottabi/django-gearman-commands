@@ -99,6 +99,7 @@ class GearmanServerInfo():
         self.host = host
         self.server_version = None
         self.tasks = None
+        self.workers = None
 
     def get_server_info(self):
         """Read Gearman server info - status, workers and and version."""
@@ -109,6 +110,7 @@ class GearmanServerInfo():
         
         self.server_version = client.get_version()
         self.tasks = client.get_status()
+        self.workers = client.get_workers()
 
         # use prettytable if available, otherwise raw output
         try:
@@ -118,21 +120,32 @@ class GearmanServerInfo():
             use_prettytable = False
 
         if use_prettytable:
-            # PrettyTable output
+            # use PrettyTable for output
+            # version
             table = PrettyTable(['Gearman Server Host', 'Gearman Server Version'])
             table.add_row([self.host, self.server_version])
             result += '%s.\n\n' % str(table)
 
+            # tasks
             table = PrettyTable(['Task Name', 'Total Workers', 'Running Jobs', 'Queued Jobs'])
             for r in self.tasks:
                 table.add_row([r['task'], r['workers'], r['running'], r['queued']])
+                
+            result += '%s.\n\n' % str(table)
+
+            # workers
+            table = PrettyTable(['Worker IP', 'Registered Tasks', 'Client ID', 'File Descriptor'])
+            for r in self.workers:
+                if r['tasks']: # ignore workers with no registered task
+                    table.add_row([r['ip'], ','.join(r['tasks']), r['client_id'], r['file_descriptor']])
 
             result += '%s.\n\n' % str(table)
 
         else:
-            # raw output
+            # raw output without PrettyTable
             result += 'Gearman Server Host:%s\n' % self.host
             result += 'Gearman Server Version:%s.\n' % self.server_version
             result += 'Tasks:\n%s\n' % str(self.tasks)
+            result += 'Workers:\n%s\n' % str(self.workers)
             
         return result

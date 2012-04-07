@@ -38,11 +38,13 @@ BSD, see LICENSE for details
 Authors and contributors
 ========================
 
-Jozef Ševčík, sevcik@codescale.net
+Author: Jozef Ševčík, sevcik@codescale.net
+
+Contributors:
+None. Be the first ! :)
 
 TODO
 ====
 
 * cleaning up gearman jobs after failed unit tests
 * improve logging
-* gearman_server_info - output 'workers'
