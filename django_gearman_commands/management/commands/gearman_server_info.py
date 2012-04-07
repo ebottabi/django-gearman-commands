@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from prettytable import PrettyTable
 import gearman
 import logging
 from django_gearman_commands import GearmanServerInfo
@@ -9,7 +8,7 @@ from django_gearman_commands import GearmanServerInfo
 log = logging.getLogger(__name__)
 
 class Command(BaseCommand):
-    """Pretty-print overview of Gearman server status and workers."""
+    """Pprint overview of Gearman server status and workers."""
 
     help = 'Print overview of Gearman server status and workers.'
 
