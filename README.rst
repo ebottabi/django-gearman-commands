@@ -9,7 +9,7 @@ tasks to Gearman job server from Django.
 About Gearman
 =============
 
-Gearman, as stated on project website, provides 'a generic application framework to farm out work to other machines or processes that are better suited to do the work.'.
+Gearman, as stated on project website, provides 'a generic application framework to farm out work to other machines or processes that are better suited to do the work'.
 Practically, Gearman is a daemon, service, running on TCP port and waiting for Clients wishing to get job done and Workers who handle and process the jobs.
 Gearman - anagram for "Manager" itself does exactly what manager does - accept requests from Clients and distribute them to Workers.
 
@@ -173,9 +173,9 @@ As you see, you need to do three things:
 
 Run your worker::
 
- $ ./manage.py gearman_worker_data_import.py
+ $ ./manage.py gearman_worker_data_import
 
-Worker will start, say hello to Gearman server(s) and wait for jobs. 
+Worker will start, register itself to Gearman server(s) and wait for jobs. 
 
 Submitting jobs
 ---------------
@@ -190,6 +190,26 @@ You can submit first job easily with 'gearman_submit_job' commands::
 
 By default, jobs are submitted in background and 'gearman_submit_job' does not wait for job to finish.
 If you did everything right, your worker method 'your_code_performing_job_logic()' should be now running in background.
+
+This method is fine if you want to run job manually or from cron.
+For example, if you want to run data_import for cron every 5 minutes, you can add something like this to cron::
+
+ */5 * * * * /path-to-your-virtualenv/bin/python /path-to-your-project/manage.py gearman_submit_job data_import
+
+However, in lot of cases, you want to run job on-demand, for example in some Django view, user makes some action
+and you want to run job immediately - sending email, importing data or anything else you need and don't want to block
+user's web request until task is completed.
+Django can call custom management commands programatically, via django.core.management.call_command method::
+
+ from django.core.management import call_command
+ 
+ def some_view(request):
+     # ....process your view logic....
+     # submit job to queue
+     call_command('gearman_submit_job', 'data_import')    
+
+By using job submission wrapper Command 'gearman_submit_job',
+you are now able submit jobs from console, cron and your app with same API.
 
 Gearman server info
 -------------------
@@ -221,8 +241,69 @@ If you installed prettytable dependency, here is how output looks like::
  +-----------+------------------+-----------+-----------------+
 
 
-Practical production deployment with supervisord
-================================================
+Practical production deployment with Supervisor
+===============================================
+
+In production, you need to be sure about two things:
+
+ * your Gearman server is running
+ * your Workers are running
+
+Supervisor -  http://supervisord.org/ is babysitter for processes.
+It allows you to launch, restart and monitor running processes.
+
+Supervisor + Gearman
+--------------------
+
+Assuming you have supervisor installed and know the basics,
+you can create 'gearman.conf' in /etc/supervisor/conf.d with following content::
+
+ [program:gearman]
+ command=/home/gearman/gearmand/gearmand/gearmand -q libsqlite3 --libsqlite3-db=/home/gearman/gearmand-sqlite.db -L 127.0.0.1
+ numprocs=1
+ directory=/home/gearman
+ stdout_logfile=/var/log/gearman.log
+ autostart=true
+ autorestart=true
+ user=gearman
+
+This will start Gearman server compiled in /home/gearman/earmand/gearmand/gearmand with SQLite persistent queue on localhost.
+Of course, your variables may vary.
+
+Supervisor + Workers
+--------------------
+
+You can create single .conf file for all workers relevant to single application.
+This will create process 'group' and allows you to reload of all workers related to some application
+at once when you redeploy new code.
+
+For example, create 'myapp.conf' in /etc/supervisor/conf.d with all workers relevant to 'myapp':::
+
+ [program:myapp_data_import]
+ command=/path-to-your-virtualenv/bin/python /path-to-your-project/manage.py gearman_worker_data_import
+ numprocs=1
+ directory=/home/myapp/
+ stdout_logfile=/var/log/myapp_data_import.log
+ autostart=true
+ autorestart=true
+ user=myapp
+
+ [program:myapp_send_invoices]
+ command=/path-to-your-virtualenv/bin/python /path-to-your-project/manage.py gearman_worker_send_invoices
+ numprocs=1
+ directory=/home/myapp/
+ stdout_logfile=/var/log/myapp_send_invoices.log
+ autostart=true
+ autorestart=true
+ user=myapp
+
+After redeployment, you can restart all workers:::
+
+ $ supervisorctl reread
+ $ supervisorctl update
+ $ supervisorctl restart myapp:*
+
+I recommend automating this with Fabric - http://docs.fabfile.org/
 
 Contributing to django-gearman-commands
 =======================================
