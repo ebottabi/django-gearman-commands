@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup
+from setuptools import setup, find_packages
 import os
 import django_gearman_commands
 
@@ -23,6 +23,7 @@ setup(
     license='BSD',
     keywords = 'django gearman gearmand jobs queue',
     packages=['django_gearman_commands'],
+    include_package_data=True,
     platforms='any',
     classifiers=[
         'Development Status :: 5 - Production/Stable',

@@ -2,3 +2,4 @@ include README.rst
 include LICENSE
 include requirements.txt
 include runtests.py
+recursive-include django_gearman_commands *.py

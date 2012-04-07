@@ -9,3 +9,5 @@
 pip-log.txt*
 *.swn
 logs
+dist
+django_gearman_commands.egg-info
