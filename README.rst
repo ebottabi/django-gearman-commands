@@ -11,7 +11,7 @@ About Gearman
 
 Gearman, as stated on project website, provides 'a generic application framework to farm out work to other machines or processes that are better suited to do the work'.
 Practically, Gearman is a daemon, service, running on TCP port and waiting for Clients wishing to get job done and Workers who handle and process the jobs.
-Gearman - anagram for "Manager" itself does exactly what manager does - accept requests from Clients and distribute them to Workers.
+Gearman - anagram for "Manager" itself does exactly what manager does - accepts requests from Clients and distribute them to Workers.
 
 Illustration how it works with one Gearman server::
 
@@ -296,6 +296,9 @@ For example, create 'myapp.conf' in /etc/supervisor/conf.d with all workers rele
  autostart=true
  autorestart=true
  user=myapp
+
+ [group:myapp]
+ programs=myapp_data_import, myapp_send_invoices
 
 After redeployment, you can restart all workers:::
 
